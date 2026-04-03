@@ -60,10 +60,6 @@ def check_api_auth(req) -> bool:
     return req.headers.get("Authorization") == API_AUTH
 
 
-# ========================
-# ROUTES
-# ========================
-
 @app.route("/", methods=["GET"])
 def home():
     return "Webhook works", 200
@@ -125,5 +121,3 @@ def api_consume_vote(user_id: int):
         "user_id": user_id,
         "consumed": True
     }), 200
-        print("SAVE ERROR:", str(e))
-        return jsonify({"error": "internal_error"}), 500
