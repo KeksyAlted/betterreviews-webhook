@@ -60,6 +60,10 @@ def check_api_auth(req) -> bool:
     return req.headers.get("Authorization") == API_AUTH
 
 
+# ========================
+# ROUTES
+# ========================
+
 @app.route("/", methods=["GET"])
 def home():
     return "Webhook works", 200
@@ -67,20 +71,30 @@ def home():
 
 @app.route("/topgg", methods=["POST"])
 def topgg_vote():
+    print("TOPGG HIT")
+    print("HEADERS AUTH:", repr(request.headers.get("Authorization")))
+    print("EXPECTED AUTH:", repr(TOPGG_WEBHOOK_AUTH))
+    print("RAW JSON:", request.json)
+
     auth = request.headers.get("Authorization")
     if auth != TOPGG_WEBHOOK_AUTH:
+        print("UNAUTHORIZED")
         return jsonify({"error": "unauthorized"}), 401
 
     data = request.json or {}
     user_id = data.get("user")
 
     if not user_id:
+        print("MISSING USER")
         return jsonify({"error": "missing user"}), 400
 
-    add_unclaimed_vote(int(user_id), hours=12)
-    print(f"Vote stored for user: {user_id}")
-
-    return jsonify({"ok": True}), 200
+    try:
+        add_unclaimed_vote(int(user_id), hours=12)
+        print(f"Vote stored for user: {user_id}")
+        return jsonify({"ok": True}), 200
+    except Exception as e:
+        print("SAVE ERROR:", str(e))
+        return jsonify({"error": "internal_error"}), 500
 
 
 @app.route("/has-vote/<int:user_id>", methods=["GET"])
@@ -111,30 +125,5 @@ def api_consume_vote(user_id: int):
         "user_id": user_id,
         "consumed": True
     }), 200
-
-@app.route("/topgg", methods=["POST"])
-def topgg_vote():
-    print("TOPGG HIT")
-    print("HEADERS AUTH:", repr(request.headers.get("Authorization")))
-    print("EXPECTED AUTH:", repr(TOPGG_WEBHOOK_AUTH))
-    print("RAW JSON:", request.json)
-
-    auth = request.headers.get("Authorization")
-    if auth != TOPGG_WEBHOOK_AUTH:
-        print("UNAUTHORIZED")
-        return jsonify({"error": "unauthorized"}), 401
-
-    data = request.json or {}
-    user_id = data.get("user")
-
-    if not user_id:
-        print("MISSING USER")
-        return jsonify({"error": "missing user"}), 400
-
-    try:
-        add_unclaimed_vote(int(user_id), hours=12)
-        print(f"Vote stored for user: {user_id}")
-        return jsonify({"ok": True}), 200
-    except Exception as e:
         print("SAVE ERROR:", str(e))
         return jsonify({"error": "internal_error"}), 500
