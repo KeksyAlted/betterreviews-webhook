@@ -112,9 +112,6 @@ def topgg_vote():
                     "title": "New Vote ⭐",
                     "description": f"<@{user_id}> just voted.\nThanks for the support 💜",
                     "color": 0xED4245,
-                    "thumbnail": {
-                    "url": user.display_avatar.url
-                }
             }
 
                 requests.post(
