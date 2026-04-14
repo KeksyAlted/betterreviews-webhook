@@ -108,14 +108,15 @@ def topgg_vote():
 
         if DISCORD_WEBHOOK_URL:
             try:
+                user = await bot.fetch_user(user_id)
                 embed = {
-                    "title": "⭐ New Vote",
-                    "description": f"<@{user_id}> just voted for **BetterReviews**!",
-                    "color": 0xFF3B3B,
-                    "footer": {
-                        "text": "BetterReviews • Vote Log"
-                    }
+                    "title": "New Vote ⭐",
+                    "description": f"<@{user_id}> just voted.\nThanks for the support 💜",
+                    "color": 0xED4245,
+                    "thumbnail": {
+                    "url": user.display_avatar.url
                 }
+            }
 
                 requests.post(
                     DISCORD_WEBHOOK_URL,
