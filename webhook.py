@@ -108,7 +108,6 @@ def topgg_vote():
 
         if DISCORD_WEBHOOK_URL:
             try:
-                user = await bot.fetch_user(user_id)
                 embed = {
                     "title": "New Vote ⭐",
                     "description": f"<@{user_id}> just voted.\nThanks for the support 💜",
